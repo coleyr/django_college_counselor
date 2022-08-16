@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  college-counselor:
+    container_name: college_counselor
+    restart: always
+    env_file: .env
+    command: "python3 manage.py runserver 0:8000"
+    ports:
+      - 8000:8000
+    volumes:
+     - ./apps/home:/apps/home/
+     - ./apps/authentication:/apps/authentication/
+     - ./core:/core/
+    build: .
+    networks:
+      - db_network
+      - web_network
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
+ 
