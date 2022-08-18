@@ -2,6 +2,8 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import AbstractUser
+
 GRADE_CHOICES = (
     ('freshmen','FRESHMEN'),
     ('sophmore', 'SOPHMORE'),
@@ -13,36 +15,44 @@ GRADE_CHOICES = (
 def one_week_hence():
     return timezone.now() + timezone.timedelta(days=7)
 
+class User(AbstractUser):
+  STUDENT = 1
+  COUNSELOR = 2
+  PARENT = 3
+  ROLE_CHOICES = (
+      (STUDENT, 'Student'),
+      (COUNSELOR, 'Counselor'),
+      (PARENT, 'Parent')
+  )
+
+  role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
+
 # Create your models here.
 class Person(models.Model):
-    first_name = models.CharField(max_length=75)
-    last_name = models.CharField(max_length=75)
-    email = models.EmailField()
+    img = models.ImageField(blank=True)
+    
+    def __str__(self) -> str:
+        return f"{self.user.first_name} {self.user.last_name}"
     class Meta:
         abstract = True
 
 class Counselor(Person):
-    img = models.ImageField(blank=True)
-    staff = models.BooleanField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
-    def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
 
 class Student(Person):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     grade = models.CharField(max_length=10, choices=GRADE_CHOICES, default='freshmen')
-    img = models.ImageField(blank=True)
     counselor = models.ForeignKey(Counselor, on_delete=models.DO_NOTHING)
     constraints = [
-        models.UniqueConstraint(fields=['first_name', 'last_name', 'email'], name='student_name_unique_together_constraint')
+        models.UniqueConstraint(fields=['user'], name='student_name_unique_together_constraint')
     ]
-    def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+
     
 class Parent(Person):
-    img = models.ImageField(blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     student = models.ManyToManyField(Student)
-    def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+
 
 class ToDoList(models.Model):
     title = models.CharField(max_length=100, unique=True)

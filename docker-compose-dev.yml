@@ -10,7 +10,10 @@ services:
     volumes:
      - ./apps/home:/apps/home/
      - ./apps/authentication:/apps/authentication/
+     - ./apps/templates:/apps/templates/
      - ./core:/core/
+     - myapp
+
     build: .
     networks:
       - db_network
@@ -21,3 +24,5 @@ networks:
   web_network:
     driver: bridge
  
+volumes:
+ myapp:

@@ -148,3 +148,14 @@ STATICFILES_DIRS = (
 
 #############################################################
 #############################################################
+
+EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
+
+ANYMAIL = {
+    "SENDGRID_API_KEY": "",
+}
+
+DEFAULT_FROM_EMAIL = ""  # if you don't already have this in settings
+SERVER_EMAIL = "your-server@example.com"  # ditto (default from-email for Django errors)
+
+AUTH_USER_MODEL = "home.User"
