@@ -32,15 +32,17 @@
                     {% for student in students %}
                     <tr>
                       <td>
+                        <a href="{% url 'student' student %}">
                         <div class="d-flex px-2 py-1">
                           <div>
-                            <img src="{{ ASSETS_ROOT }}/img/team-2.jpg" class="avatar avatar-sm me-3" alt="user1">
+                            <img src="{{ student.get_photo_url }}" class="avatar avatar-sm me-3" alt="user1">
                           </div>
                           <div class="d-flex flex-column justify-content-center">
                             <h6 class="mb-0 text-sm">{{ student }}</h6>
                             {% comment %} <p class="text-xs text-secondary mb-0">{{ student.grade }}</p> {% endcomment %}
                           </div>
                         </div>
+                      </a>
                       </td>
                       <td>
                         <p class="text-xs font-weight-bold mb-0">{{ student.grade }}</p>

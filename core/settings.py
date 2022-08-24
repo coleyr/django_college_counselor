@@ -25,6 +25,8 @@ DEBUG = env('DEBUG')
 
 # Assets Management
 ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets') 
+MEDIA_URL = '/media/' 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # load production server from .env
 ALLOWED_HOSTS        = ['localhost', 'localhost:85', '127.0.0.1',               env('SERVER', default='127.0.0.1') ]
@@ -149,13 +151,13 @@ STATICFILES_DIRS = (
 #############################################################
 #############################################################
 
+#Email Settings for sendgrid through anymail
 EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
-
 ANYMAIL = {
     "SENDGRID_API_KEY": "",
 }
-
 DEFAULT_FROM_EMAIL = ""  # if you don't already have this in settings
 SERVER_EMAIL = "your-server@example.com"  # ditto (default from-email for Django errors)
 
+#Set User model to the edited abstract model under home
 AUTH_USER_MODEL = "home.User"

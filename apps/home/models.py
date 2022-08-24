@@ -16,21 +16,28 @@ def one_week_hence():
     return timezone.now() + timezone.timedelta(days=7)
 
 class User(AbstractUser):
-  STUDENT = 1
-  COUNSELOR = 2
-  PARENT = 3
-  ROLE_CHOICES = (
-      (STUDENT, 'Student'),
-      (COUNSELOR, 'Counselor'),
-      (PARENT, 'Parent')
-  )
+    STUDENT = 1
+    COUNSELOR = 2
+    PARENT = 3
+    ROLE_CHOICES = (
+        (STUDENT, 'Student'),
+        (COUNSELOR, 'Counselor'),
+        (PARENT, 'Parent')
+    )
 
-  role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
-
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 # Create your models here.
 class Person(models.Model):
-    img = models.ImageField(blank=True)
-    
+    img = models.ImageField(blank=True, upload_to='img', default=f'/img/student-icon.png')
+    @property
+    def get_photo_url(self):
+        if self.img and hasattr(self.img, 'url'):
+            return self.img.url
+        else:
+            return "/media/img/student-icon.jpg"
+        
     def __str__(self) -> str:
         return f"{self.user.first_name} {self.user.last_name}"
     class Meta:
@@ -56,13 +63,13 @@ class Parent(Person):
 
 class ToDoList(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("list", args=[self.id])
 
     def __str__(self):
-        return f"{self.student} - {self.title}"
+        return f"{self.assignee} - {self.title}"
 
 class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
