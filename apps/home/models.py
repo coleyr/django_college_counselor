@@ -27,7 +27,11 @@ class User(AbstractUser):
 
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return f"{self.username}"
+    def __repr__(self) -> str:
+        return self.__str__
 # Create your models here.
 class Person(models.Model):
     img = models.ImageField(blank=True, upload_to='img', default=f'/img/student-icon.png')
@@ -39,7 +43,11 @@ class Person(models.Model):
             return "/media/img/student-icon.jpg"
         
     def __str__(self) -> str:
-        return f"{self.user.first_name} {self.user.last_name}"
+        if self.user.first_name and self.user.last_name:
+            return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.user.username}"
+    def __repr__(self) -> str:
+        return self.__str__
     class Meta:
         abstract = True
 

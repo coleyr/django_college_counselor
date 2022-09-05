@@ -16,3 +16,4 @@ sqlparse==0.4.2
 toml==0.10.2
 urllib3==1.26.11
 whitenoise==5.3.0
+django-crispy-forms==1.14.0

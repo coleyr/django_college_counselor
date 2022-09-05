@@ -23,11 +23,10 @@ def validate_student_view(request, student):
     if parent:
         return parent.student.filter(user=student).exists()
 
-def get_student_from_name(name: str, request):
+def get_student_from_name(id: str, request):
     student, error = None, None
     try:
-        first_name, last_name = name.split()
-        student_user = User.objects.get(first_name=first_name, last_name=last_name)
+        student_user = User.objects.get(id=id)
         student = Student.objects.get(user=student_user)
     except User.DoesNotExist:
         html_template = loader.get_template('home/page-404.html')
@@ -46,7 +45,8 @@ def user_can_view_student():
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            student, error = get_student_from_name(kwargs['name'], request)
+            student, error = get_student_from_name(kwargs['id'], request)
+            print("STUDENT", kwargs['id'])
             if error:
                 return error
             if not validate_student_view(request, student):

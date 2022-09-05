@@ -10,6 +10,14 @@ from django.template import loader
 from django.urls import reverse
 from apps.home.models import Counselor, Student, Parent, ToDoItem, ToDoList, User
 from apps.home.validators import user_can_view_student, get_student_from_name
+from django.shortcuts import render, redirect
+from django.forms.formsets import formset_factory
+## import todo form and models
+from apps.home.forms import TodoItemForm, TodoListForm
+ 
+###############################################
+
+
 
 def get_username(request):
     return request.user.username if request.user.is_authenticated else None
@@ -95,9 +103,9 @@ def pages(request, *args, **kwargs):
 
 @login_required(login_url="/login/")
 @user_can_view_student()
-def student_page(request, name:str):
+def student_page(request, id:str):
     #Get The name of the user... could use user_id...
-    student, error = get_student_from_name(name, request)
+    student, error = get_student_from_name(id, request)
     if error:
         return error
     context = {'student':student}
@@ -116,3 +124,22 @@ def student_page(request, name:str):
         print(e)
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/login/")
+@user_can_view_student()
+def to_do_list(request, id):
+    form = TodoItemForm()
+    item_list =  ToDoItem.objects.order_by("created_date")
+    
+    if request.method == "POST":
+        form = TodoItemForm(request.POST)
+        if form.is_valid():
+            todoitem = form.save()
+        return redirect('todo')
+
+    page = {
+             "forms" : form,
+             "list" : item_list,
+             "title" : "TODO LIST",
+           }
+    return render(request, 'home/todo_list.html', page)

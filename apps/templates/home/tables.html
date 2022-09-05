@@ -32,7 +32,7 @@
                     {% for student in students %}
                     <tr>
                       <td>
-                        <a href="{% url 'student' student %}">
+                        <a href="{% url 'student' student.user.id %}">
                         <div class="d-flex px-2 py-1">
                           <div>
                             <img src="{{ student.get_photo_url }}" class="avatar avatar-sm me-3" alt="user1">

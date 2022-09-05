@@ -13,7 +13,9 @@ urlpatterns = [
 
     # Matches any html file
     re_path(r'^.*\.*html', views.pages, name='pages'),
+    
+    path('student/<id>/todo/', views.to_do_list, name='todo'),
 
     # The home page
-    path('student/<name>', views.student_page, name='student'),
+    path('student/<id>', views.student_page, name='student'),
 ]
