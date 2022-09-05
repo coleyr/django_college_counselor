@@ -73,19 +73,19 @@
                       <img src="{{ ASSETS_ROOT }}/img/small-logos/logo-xd.svg" class="avatar avatar-sm me-3" alt="xd">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">todo.title</h6>
+                      <h6 class="mb-0 text-sm">{{ todo.title }}</h6>
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="avatar-group mt-2">
-                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ user.user.img }}">
-                      <img src="" alt="team1">
+                    <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="img">
+                      <img src="{{ user.COUNSELOR.get_photo_url }}" alt="team1">
                     </a>
                   </div>
                 </td>
                 <td class="align-middle text-center text-sm">
-                  <span class="text-xs font-weight-bold"> $14,000 </span>
+                  <span class="text-xs font-weight-bold"> {{ todo.due_date }} </span>
                 </td>
                 <td class="align-middle">
                   <div class="progress-wrapper w-75 mx-auto">

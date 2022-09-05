@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
 
 GRADE_CHOICES = (
-    ('freshmen','FRESHMEN'),
+    ('freshman','FRESHMAN'),
     ('sophmore', 'SOPHMORE'),
     ('junior','JUNIOR'),
     ('senior','SENIOR'),
@@ -57,7 +57,7 @@ class Counselor(Person):
 
 class Student(Person):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    grade = models.CharField(max_length=10, choices=GRADE_CHOICES, default='freshmen')
+    grade = models.CharField(max_length=10, choices=GRADE_CHOICES, default='freshman')
     counselor = models.ForeignKey(Counselor, on_delete=models.DO_NOTHING)
     constraints = [
         models.UniqueConstraint(fields=['user'], name='student_name_unique_together_constraint')
