@@ -58,7 +58,7 @@ class Counselor(Person):
 class Student(Person):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     grade = models.CharField(max_length=10, choices=GRADE_CHOICES, default='freshman')
-    counselor = models.ForeignKey(Counselor, on_delete=models.DO_NOTHING)
+    counselor = models.ForeignKey(Counselor, on_delete=models.DO_NOTHING, null=True, blank=True)
     constraints = [
         models.UniqueConstraint(fields=['user'], name='student_name_unique_together_constraint')
     ]
@@ -66,7 +66,7 @@ class Student(Person):
     
 class Parent(Person):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    student = models.ManyToManyField(Student)
+    student = models.ManyToManyField(Student, null=True, blank=True)
 
 
 class ToDoList(models.Model):
