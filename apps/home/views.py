@@ -40,17 +40,20 @@ def get_students(request):
 
 def get_todo_items(user):
     todo_items = []
-    for todo_list in ToDoList.objects.filter(assignee=user):
-        todo_items.extend(ToDoItem.objects.filter(todo_list=todo_list)) 
+    for todo_item in ToDoItem.objects.filter(assignee=user):
+        todo_items.extend(ToDoItem.objects.filter(todo_list=todo_item)) 
     return todo_items
+
+def get_role_name(user):
+    role_name = None
+    for choice in User.ROLE_CHOICES:
+        if choice[0] == user.role:
+            role_name = choice[1]
+    return role_name
 
 def get_dashboard_data(request):
     data = {"user": request.user}
-    role_name = None
-    for choice in User.ROLE_CHOICES:
-        if choice[0] == request.user.role:
-            role_name = choice[1]
-    data['role_name'] = role_name
+    data['role_name'] = get_role_name(request.user)
     user_types = {"STUDENT":Student, "COUNSELOR":Counselor, "PARENT":Parent}
     for user_type_name, user_class in user_types.items():
         try:
@@ -66,9 +69,8 @@ def get_to_do_list(user):
         yield todo_list
 
 def get_to_dos(user):
-    for todo_list in get_to_do_list(user):
-        for todo in ToDoItem.objects.filter(todo_list=todo_list):
-            yield todo
+    for todo in ToDoItem.objects.filter(assignee=user):
+        yield todo
 
 def get_todo_bound_forms(user):
     forms = [TodoItemForm(instance=todo) for todo in get_to_dos(user)]
@@ -126,9 +128,17 @@ def pages(request, *args, **kwargs):
 def student_page(request, id:str):
     #Get The name of the user... could use user_id...
     student, error = get_user_from_id(id, request)
+    forms = get_todo_bound_forms(student.user)
+    role_name = get_role_name(student.user)
+    if request.method == "POST":
+        form = TodoItemForm(request.POST)
+        if form.is_valid():
+            list_obj = form.save()
+            list_obj.assignee = student.user
+            list_obj.save()
     if error:
         return error
-    context = {'student':student}
+    context = {'student':student, 'forms':forms, 'role_name':role_name}
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
@@ -157,7 +167,6 @@ def to_do_list(request, id):
             list_obj.save()
 
     forms = get_todo_list_bound_forms(user)
-    print(forms)
     page = {
                 "id": id,
              "forms" : forms,

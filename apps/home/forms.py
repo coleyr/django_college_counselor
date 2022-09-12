@@ -6,15 +6,10 @@ from apps.home.models import ToDoList, ToDoItem
 
 class TodoListForm(forms.ModelForm):
     
-    
-    def set_readonly(self, field='assignee'):              
-        self.fields[field].required = False
-        self.fields[field].widget.attrs['disabled'] = 'disabled'
-
     class Meta:
         model = ToDoList
         fields="__all__"
-        exclude = ('assignee',)
+
 
 
 class TodoItemForm(forms.ModelForm):
@@ -22,5 +17,6 @@ class TodoItemForm(forms.ModelForm):
     class Meta:
         model = ToDoItem
         fields ="__all__"
+        exclude = ('assignee',)
 
         
