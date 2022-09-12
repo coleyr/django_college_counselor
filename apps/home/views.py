@@ -61,14 +61,25 @@ def get_dashboard_data(request):
     data['todos'] = get_todo_items(request.user)
     return data
 
-def get_to_dos(user):
+def get_to_do_list(user):
     for todo_list in ToDoList.objects.filter(assignee=user):
+        yield todo_list
+
+def get_to_dos(user):
+    for todo_list in get_to_do_list(user):
         for todo in ToDoItem.objects.filter(todo_list=todo_list):
             yield todo
 
 def get_todo_bound_forms(user):
     forms = [TodoItemForm(instance=todo) for todo in get_to_dos(user)]
     forms.append(TodoItemForm())
+    return forms
+
+def get_todo_list_bound_forms(user):
+    forms = [{"bound_form":TodoListForm(instance=todo_list), "id":todo_list.id} for todo_list in get_to_do_list(user)]
+    # for item in forms:
+    #     item.set_readonly()
+    forms.append({"bound_form":TodoListForm(), "id":"None"})
     return forms
 
 @login_required(login_url="/login/")
@@ -133,17 +144,34 @@ def student_page(request, id:str):
         print(e)
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
-
+#ok
 @login_required(login_url="/login/")
 @user_can_view_student()
 def to_do_list(request, id):
     user =User.objects.get(id=id)
-    forms = get_todo_bound_forms(user)
     if request.method == "POST":
-        form = TodoItemForm(request.POST)
-        print(form)
+        form = TodoListForm(request.POST)
+        if form.is_valid():
+            list_obj = form.save()
+            list_obj.assignee = user
+            list_obj.save()
+
+    forms = get_todo_list_bound_forms(user)
+    print(forms)
     page = {
+                "id": id,
              "forms" : forms,
              "title" : "TODO LIST",
            }
     return render(request, 'home/todo_list.html', page)
+
+@login_required(login_url="/login/")
+@user_can_view_student()
+def delete_todo_list(request, id, todolist_id):
+    if todolist_id in {"None", None}:
+       return redirect(to_do_list, id)
+    user = User.objects.get(id=id)
+    todolist_del_list = ToDoList.objects.filter(assignee=user, id=todolist_id)
+    for todolist in todolist_del_list:
+        todolist.delete()
+    return redirect(to_do_list, id)

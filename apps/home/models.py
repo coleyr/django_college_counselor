@@ -12,6 +12,14 @@ GRADE_CHOICES = (
     ('grad','GRAD'),
 )
 
+STATUS_CHOICES =(
+    ('Not Being Worked on','NOT BEING WORKED ON'),
+    ('In Progress', 'IN PROGRESS'),
+    ('Awaiting Feedback','AWAITING FEEDBACK'),
+    ('Complete','COMPLETE'),
+    ('stuck','STUCK'),
+)
+
 def one_week_hence():
     return timezone.now() + timezone.timedelta(days=7)
 
@@ -31,7 +39,7 @@ class User(AbstractUser):
             return f"{self.first_name} {self.last_name}"
         return f"{self.username}"
     def __repr__(self) -> str:
-        return self.__str__
+        return self.__str__()
 # Create your models here.
 class Person(models.Model):
     img = models.ImageField(blank=True, upload_to='img', default=f'/img/student-icon.png')
@@ -47,7 +55,7 @@ class Person(models.Model):
             return f"{self.user.first_name} {self.user.last_name}"
         return f"{self.user.username}"
     def __repr__(self) -> str:
-        return self.__str__
+        return self.__str__()
     class Meta:
         abstract = True
 
@@ -66,12 +74,14 @@ class Student(Person):
     
 class Parent(Person):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    student = models.ManyToManyField(Student, null=True, blank=True)
-
+    student = models.ManyToManyField(Student, blank=True)
+    @property
+    def student_names(self):
+        student_names = " ".join(f"{student.user.first_name}, {student.user.last_name}" for student in self.student.all()) if self.student.all() else None
+        return student_names
 
 class ToDoList(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("list", args=[self.id])
@@ -84,8 +94,9 @@ class ToDoItem(models.Model):
     description = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField(default=one_week_hence)
-    todo_list = models.ForeignKey(ToDoList, on_delete=models.CASCADE)
-
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Not Being Worked on')
+    todo_list = models.ForeignKey(ToDoList, on_delete=models.CASCADE, blank=True, null=True)
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     def get_absolute_url(self):
         return reverse(
             "item-update", args=[str(self.todo_list.id), str(self.id)]
