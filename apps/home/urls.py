@@ -17,7 +17,7 @@ urlpatterns = [
     # The home page
     path('user/<id>', views.student_page, name='user'),
     path('user/<id>/todo/', views.to_do_list, name='todo'),
-    path('user/<id>/delete/<todolist_id>', views.delete_todo_list, name="delete_todo_list"),
+    path('user/<id>/delete/<todolist_id>', views.delete_todo_item, name="delete_todo_list"),
 
 
 ]

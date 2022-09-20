@@ -54,7 +54,6 @@ def user_can_view_student():
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            print(kwargs)
             user, error = get_user_from_id(kwargs['id'], request)
             if error:
                 return error

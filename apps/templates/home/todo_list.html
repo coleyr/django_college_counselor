@@ -1,45 +1,70 @@
-{% extends 'layouts/base.html' %}
-
-{% block title %} Profile {% endblock title %}
-
+{% extends 'layouts/base.html' %}  {% block title %}
+Profile {% endblock title %}
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}
-
+{% block stylesheets %}{% endblock stylesheets %} {% block content %} {% if messages %} {% for message in messages %}
+<div class="alert alert-info">
+  <strong>{{message}}</strong>
+</div>
+{% endfor %} {% endif %}
 {% load crispy_forms_tags %}
+<center class="row text-lg-center">
+  <h1><i>TODO Items</i></h1>
+  <hr />
+</center>
 
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-info">
-    <strong>{{message}}</strong>
-  </div>
-  {% endfor %}
-  {% endif %}
+        {% for form in forms %}
+        <div class="myForm">
+          <form method='POST' action=''>{% csrf_token %}
+            <table class='table align-items-center mb-0'>
+              <tbody>
+                <td>
+                  {{ form.bound_form.title|as_crispy_field }}
+                </td>
+                <td>
+                  {{ form.bound_form.status|as_crispy_field }}
+                </td>
+                <td>
+                  {{ form.bound_form.description|as_crispy_field }}
+                </td>
+                <td>
+                  {{ form.bound_form.due_date|as_crispy_field }}
+                </td>
+              </tbody>
+              <!-- <input type="submit" value='Submit'/>   -->
+            </table>
+            <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+            </div>
 
-  <center class="row text-lg-center">
-    <h1><i>TODO Items</i></h1>
-    <hr />
-  </center>
-  <div class="row">
-    <div class="text-lg-center">
-      {% for form in forms %}
-      <form method="post">
-        {% csrf_token %}
-        {{ form.bound_form|crispy}}
-        <input type="submit" value="Create" class='btn btn-default'>
-        <a href="{% url 'delete_todo_list' id=id todolist_id=form.id %}" value="Delete" class='btn btn-default btn-danger'>Delete</a>
-      </form>
-      {% endfor%}
+          {% endfor%}
+
+
+
+    <div class="myForm">
+      <form method='POST' action=''>{% csrf_token %}
+        <table class='table align-items-center mb-0'>
+          <tbody>
+            <td>
+              {{ create_form.title|as_crispy_field }}
+            </td>
+            <td>
+              {{ create_form.status|as_crispy_field }}
+            </td>
+            <td>
+              {{ create_form.description|as_crispy_field }}
+            </td>
+            <td>
+              {{ create_form.due_date|as_crispy_field }}
+            </td>
+          </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Create</button>
+  </form>
     </div>
+  </div>
 </div>
 
+{% include "includes/footer.html" %} {% endblock content %}
 
-      {% include "includes/footer.html" %}
-
-
-
-{% endblock content %}
-
-<!-- Specific JS goes HERE --> 
+<!-- Specific JS goes HERE -->
 {% block javascripts %}{% endblock javascripts %}
